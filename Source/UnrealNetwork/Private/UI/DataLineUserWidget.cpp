@@ -19,3 +19,5 @@ void UDataLineUserWidget::UpdateFloatValue(float InValue)
 {
 	Value->SetText(FText::AsNumber(static_cast<int32>(InValue)));
 }
+
+

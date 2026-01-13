@@ -25,5 +25,12 @@ protected:
 	TObjectPtr<UDataLineUserWidget> Level = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+
+
+
+
+
+
+
 	TObjectPtr<UDataLineUserWidget> Exp = nullptr;
 };

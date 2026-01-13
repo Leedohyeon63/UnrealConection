@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "PracticeController.generated.h"
+#include "Components/BillboardComponent.h"
 
 class UInputMappingContext;
 class UInputAction;
+
 /**
  * 
  */
