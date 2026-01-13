@@ -36,7 +36,7 @@ void AReplecationCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 void AReplecationCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AReplecationCharacter, Health, COND_SimulatedOnly);
+	//DOREPLIFETIME(AReplecationCharacter, Health, COND_SimulatedOnly);
 	DOREPLIFETIME_CONDITION(AReplecationCharacter, Level, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AReplecationCharacter, Exp, COND_OwnerOnly);
 }
