@@ -46,7 +46,8 @@ void ANetProjectile::OnHit(AActor* SelfActor, AActor* OtherActor, FVector Normal
 {
 	if (HasAuthority())
 	{
-		if (!IsHit && OtherActor -> IsA<ACharacter>())
+		if (!bIsHit && OtherActor->IsA<ACharacter>()	// 한번도 충돌한적 없고, 캐릭터와 캐릭터의 파생클래스만 처리
+			&& this != OtherActor && GetOwner() != OtherActor)
 		{
 			if (GetInstigator())
 			{
@@ -55,7 +56,7 @@ void ANetProjectile::OnHit(AActor* SelfActor, AActor* OtherActor, FVector Normal
 
 			Multicast_HitEffect(Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 			SetLifeSpan(2.0f);
-			IsHit = true;
+			bIsHit = true;
 		}
 	}
 

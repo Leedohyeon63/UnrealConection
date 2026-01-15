@@ -37,5 +37,5 @@ protected:
 	TObjectPtr<class UNiagaraSystem> HitEffect = nullptr;
 
 private:
-	bool IsHit = false;
+	bool bIsHit = false;
 };

@@ -3,7 +3,8 @@
 
 #include "Character/RPCCharacter.h"
 #include "Camera/CameraShakeBase.h"
-
+#include "NiagaraFunctionLibrary.h"
+#include "Net/UnrealNetwork.h"
 // Sets default values
 ARPCCharacter::ARPCCharacter()
 {
@@ -17,7 +18,7 @@ ARPCCharacter::ARPCCharacter()
 // Called when the game starts or when spawned
 void ARPCCharacter::BeginPlay()
 {
-	Super::BeginPlay();
+	Super::BeginPlay(); 
 	
 }
 
@@ -35,24 +36,40 @@ void ARPCCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
+void ARPCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ARPCCharacter, Health);
+}
+
 void ARPCCharacter::Client_OnHit_Implementation()
 {
 	FString RoleName = HasAuthority() ? TEXT("Server") : TEXT("Client");
 	FString ControllerName = GetController() ? GetController()->GetName() : TEXT("NoController");
 
-	GEngine->AddOnScreenDebugMessage(
-		-1, 5.0f, FColor::Red,
-		FString::Printf(TEXT("[%s] %s : 내가 맞았음"), *RoleName, *ControllerName)
-	);
+	//GEngine->AddOnScreenDebugMessage(
+	//	-1, 5.0f, FColor::Red,
+	//	FString::Printf(TEXT("[%s] %s : 내가 맞았음"), *RoleName, *ControllerName)
+	//);
 
 	APlayerController* PC = Cast<APlayerController>(GetController());
 	PC->ClientStartCameraShake(CameraShakeClass);
+
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), EffectClass, 
+		GetActorLocation() + FVector::UpVector * 100.0f, FRotator());
 }
 
 void ARPCCharacter::OnTakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 	if (HasAuthority())
 	{
+		Health -= Damage;
+
+		if (IsLocallyControlled())
+		{
+			OnRef_Health();	// 서버는 리플리케이션이 없으므로 수동으로 UI 같은 것들 갱신
+		}
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("맞았음"));	
 		//APlayerController* PC = Cast<APlayerController>(GetController());
 		//GEngine->AddOnScreenDebugMessage(
@@ -92,5 +109,10 @@ void ARPCCharacter::Sever_Fire_Implementation()
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		GetWorld()->SpawnActor<AActor>(ProjectileCLass, SpawnLocation, SpawnRotation, SpawnParams);
 	}
+}
+
+void ARPCCharacter::OnRef_Health()
+{
+	UE_LOG(LogTemp, Log, TEXT("체력 : %.1f"), Health);
 }
 
