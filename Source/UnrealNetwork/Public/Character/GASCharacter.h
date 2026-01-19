@@ -16,6 +16,11 @@ public:
 	AGASCharacter();
 
 	virtual	UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void TestActivateAbility();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -29,6 +34,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
 	TObjectPtr<class UAbilitySystemComponent> ASC = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<class UWidgetComponent> Widget = nullptr;
+
 	UPROPERTY()
 	TObjectPtr<class UTestAttributeSet> ResourceAttributeSet = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
+	TSubclassOf<UGameplayAbility> AbilityClass = nullptr;
 };
