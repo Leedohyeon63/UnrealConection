@@ -29,12 +29,14 @@ AGASCharacter::AGASCharacter()
 void AGASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	if (HasAuthority() && ASC && AbilityClass)
+	if (ASC && AbilityClass)
 	{
 		ASC->InitAbilityActorInfo(this, this);
 
-		FOnGameplayAttributeValueChange& onHealthChange
-			= ASC->GetGameplayAttributeValueChangeDelegate(UTestAttributeSet::GetHealthAttribute());
+
+		FOnGameplayAttributeValueChange& onHealthChange =
+			ASC->GetGameplayAttributeValueChangeDelegate(UTestAttributeSet::GetHealthAttribute());
+		onHealthChange.AddUObject(this, &AGASCharacter::OnHealthChange);
 
 		ASC->GiveAbility(
 			FGameplayAbilitySpec(AbilityClass, 1, -1, this)
@@ -45,6 +47,13 @@ void AGASCharacter::BeginPlay()
 			UDataLineUserWidget* HealthWidget = Cast<UDataLineUserWidget>(Widget->GetWidget());
 			HealthWidget->UpdateName(FText::AsNumber(ResourceAttributeSet->GetHealth()));
 			HealthWidget->UpdateIntValue(FMath::FloorToInt32(ResourceAttributeSet->GetMaxHealth()));
+		}
+
+		if (HasAuthority())
+		{
+			ASC->GiveAbility(
+				FGameplayAbilitySpec(AbilityClass, 1, -1, this)
+			);	// 보안 문제 때문에 서버에서만 줄 수 있어야 한다.
 		}
 	}
 }
